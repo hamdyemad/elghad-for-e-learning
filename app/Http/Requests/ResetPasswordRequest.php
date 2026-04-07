@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class ResetPasswordRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255'
+            ],
+            'code' => [
+                'required',
+                'string',
+                'size:6'
+            ],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed'
+            ]
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'email.required' => __('validation.required', ['attribute' => 'email']),
+            'email.email' => __('validation.email', ['attribute' => 'email']),
+            'code.required' => __('validation.required', ['attribute' => 'code']),
+            'code.size' => __('validation.size.custom', ['attribute' => 'code', 'size' => 6]),
+            'password.required' => __('validation.required', ['attribute' => 'password']),
+            'password.min' => __('validation.min.string', ['attribute' => 'password', 'min' => 8]),
+            'password.confirmed' => __('validation.confirmed', ['attribute' => 'password']),
+        ];
+    }
+}

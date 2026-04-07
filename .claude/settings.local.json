@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php artisan:*)",
+      "Bash(composer dump-autoload:*)",
+      "Bash(mv create.blade.php form.blade.php)",
+      "Bash(mv edit.blade.php temp.blade.php)",
+      "Bash(cd:*)",
+      "Bash(php:*)"
+    ]
+  }
+}
