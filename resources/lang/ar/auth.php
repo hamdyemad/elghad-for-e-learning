@@ -65,6 +65,7 @@ return [
     'withdraw_from_wallet' => 'سحب من المحفظة',
     'back_to_wallet' => 'العودة للمحفظة',
     'amount_usd' => 'المبلغ',
+    'amount' => 'المبلغ',
     'description' => 'الوصف',
     'minimum_amount' => 'الحد الأدنى للمبلغ',
     'deposited_amount_added' => 'سيتم إضافة المبلغ المودع إلى رصيد محفظتك فوراً',

@@ -65,6 +65,7 @@ return [
     'withdraw_from_wallet' => 'Withdraw from Wallet',
     'back_to_wallet' => 'Back to Wallet',
     'amount_usd' => 'Amount',
+    'amount' => 'Amount',
     'description' => 'Description',
     'minimum_amount' => 'Minimum amount',
     'deposited_amount_added' => 'Deposited amount will be added to your wallet balance immediately.',
