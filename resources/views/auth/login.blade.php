@@ -10,16 +10,16 @@
                     <div class="card overflow-hidden">
                         <div class="card-body pt-0">
                             <h3 class="text-center mt-4">
-                                <a href="/" class="logo logo-admin"><img src="{{ URL::asset('/images/logo-dark.png')}}" height="30" alt="logo"></a>
+                                <a href="/" class="logo logo-admin"><img src="{{ URL::asset('/images/logo.webp')}}" height="300" alt="logo"></a>
                             </h3>
                             <div class="p-3">
-                                <h4 class="text-muted font-size-18 mb-1 text-center">Welcome Back !</h4>
-                                <p class="text-muted text-center">Sign in to continue to Lexa.</p>
+                                <h4 class="text-muted font-size-18 mb-1 text-center">مرحباً بعودتك!</h4>
+                                <p class="text-muted text-center">تسجيل الدخول الى منصة الغد التعليمية</p>
                                 <form method="POST" class="form-horizontal mt-4" action="{{ route('login') }}">
                                        @csrf
                                     <div class="form-group">
-                                        <label for="username">E-Mail Address</label>
-                                         <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Email">
+                                        <label for="username">البريد الإلكتروني</label>
+                                         <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="البريد الإلكتروني">
                                         @error('email')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -28,8 +28,8 @@
 
                                     </div>
                                     <div class="form-group">
-                                        <label for="userpassword">Password</label>
-                                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" placeholder="Password">
+                                        <label for="userpassword">كلمة المرور</label>
+                                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" placeholder="كلمة المرور">
                                         @error('password')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -37,14 +37,8 @@
                                         @enderror
                                     </div>
                                     <div class="form-group row mt-4">
-                                        <div class="col-6">
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" name="remember" id="customControlInline" {{ old('remember') ? 'checked' : '' }}>
-                                        <label class="custom-control-label" for="customControlInline">{{ __('Remember Me') }}</label>
-                                            </div>
-                                        </div>
                                         <div class="col-6 text-right">
-                                            <button class="btn btn-primary w-md waves-effect waves-light" type="submit">Log In</button>
+                                            <button class="btn btn-primary w-md waves-effect waves-light" type="submit">تسجيل الدخول</button>
                                         </div>
                                     </div>
                                     {{-- <div class="form-group mb-0 row">
