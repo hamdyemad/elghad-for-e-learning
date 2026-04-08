@@ -47,19 +47,19 @@
                                             <button class="btn btn-primary w-md waves-effect waves-light" type="submit">Log In</button>
                                         </div>
                                     </div>
-                                    <div class="form-group mb-0 row">
+                                    {{-- <div class="form-group mb-0 row">
                                         <div class="col-12 mt-4">
                                             <a href="{{ route('password.request') }}" class="text-muted"><i class="mdi mdi-lock"></i> Forgot your password?</a>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </form>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-5 text-center">
+                    {{-- <div class="mt-5 text-center">
                         <p>Don't have an account ? <a href="/register" class="text-primary"> Signup Now </a></p>
                         <p>© {{  date('Y', strtotime('-2 year')) }} - {{  date('Y') }} Lexa. Crafted with <i class="mdi mdi-heart text-danger"></i> by Themesbrand</p>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
