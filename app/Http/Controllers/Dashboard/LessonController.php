@@ -59,11 +59,10 @@ class LessonController extends Controller
     public function create(Request $request)
     {
         $courseId = $request->input('course_id');
-        if (!$courseId) {
-            return $this->errorRedirect(route('dashboard.lessons.index'), __('يجب اختيار دورة أولاً'));
+        $course = null;
+        if ($courseId) {
+            $course = $this->courseService->getCourseById((int) $courseId);
         }
-
-        $course = $this->courseService->getCourseById((int) $courseId);
         return view('dashboard.lessons.form', [
             'lesson' => null,
             'course' => $course

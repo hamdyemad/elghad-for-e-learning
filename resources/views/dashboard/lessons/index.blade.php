@@ -17,15 +17,9 @@
             <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-md-3">
-                        @if($course)
-                            <x-btn href="{{ route('dashboard.lessons.create', ['course_id' => $course->id]) }}" variant="primary" block>
-                                <i class="mdi mdi-plus"></i> إضافة درس جديد
-                            </x-btn>
-                        @else
-                            <x-btn type="button" variant="primary" block disabled title="اختر كورس أولاً لتمكين إضافة الدروس">
-                                <i class="mdi mdi-plus"></i> إضافة درس جديد
-                            </x-btn>
-                        @endif
+                        <x-btn href="{{ route('dashboard.lessons.create', ['course_id' => $course?->id]) }}" variant="primary" block>
+                            <i class="mdi mdi-plus"></i> إضافة درس جديد
+                        </x-btn>
                     </div>
                     @if($course)
                         <div class="col-md-3">
