@@ -121,10 +121,10 @@
                             </small>
                         </div>
                         <div class="col-md-6 d-flex align-items-center">
-                            <div class="form-check mt-4">
-                                <input type="checkbox" name="is_free" id="is_free" class="form-check-input"
+                            <div class="custom-control custom-checkbox mt-4">
+                                <input type="checkbox" name="is_free" id="is_free" class="custom-control-input"
                                        value="1" {{ old('is_free', isset($lesson) ? $lesson->is_free : false) ? 'checked' : '' }}>
-                                <label class="form-check-label" for="is_free">
+                                <label class="custom-control-label" for="is_free">
                                     درس مجاني
                                 </label>
                             </div>

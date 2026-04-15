@@ -46,24 +46,34 @@ function updateSwitchLabel(name, isChecked) {
 @push('styles')
 <style>
 .custom-switch-lg .custom-control-label {
-    padding-right: 3rem;
+    padding-right: 4rem;
     padding-top: 0.25rem;
+    min-height: 1.75rem;
 }
 
 .custom-switch-lg .custom-control-label::before {
     height: 1.75rem;
     width: 3.5rem;
     border-radius: 2rem;
+    left: auto !important;
+    right: 0 !important;
 }
 
 .custom-switch-lg .custom-control-label::after {
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 50%;
+    left: auto !important;
+    right: 0.125rem !important;
 }
 
 .custom-switch-lg .custom-control-input:checked ~ .custom-control-label::after {
-    transform: translateX(-1.75rem);
+    transform: translateX(-1.75rem) !important;
+}
+
+.custom-switch-lg .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #626ed4 !important;
+    border-color: #626ed4 !important;
 }
 </style>
 @endpush
