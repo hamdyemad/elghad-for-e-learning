@@ -29,6 +29,9 @@ Route::prefix('auth')->group(function () {
     Route::post('/password/reset', [\App\Http\Controllers\Api\AuthController::class, 'resetPassword']);
 });
 
+// Tlync Webhook
+Route::post('/payment/tlync/webhook', [\App\Http\Controllers\Api\WalletController::class, 'tlyncWebhook'])->name('payment.tlync.webhook');
+
 // Protected Auth Routes (require authentication)
 Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
@@ -46,6 +49,9 @@ Route::middleware('auth:sanctum')->prefix('wallet')->name('api.wallet.')->group(
     // Deposit and withdraw
     Route::post('/deposit', [\App\Http\Controllers\Api\WalletController::class, 'deposit'])->name('deposit');
     Route::post('/withdraw', [\App\Http\Controllers\Api\WalletController::class, 'withdraw'])->name('withdraw');
+
+    // Tlync Payment
+    Route::post('/topup/initiate', [\App\Http\Controllers\Api\WalletController::class, 'initiateTopUp'])->name('topup.initiate');
 });
 
 

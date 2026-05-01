@@ -20,6 +20,8 @@ class WalletTransactionResource extends JsonResource
             'amount' => $this->amount,
             'formatted_amount' => format_currency($this->amount),
             'type' => $this->type,
+            'status' => $this->status,
+            'gateway' => $this->gateway,
             'description' => $this->description,
             'reference_id' => $this->reference_id,
             'reference_type' => $this->reference_type,

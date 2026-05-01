@@ -12,6 +12,7 @@ class WalletTransaction extends Model
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'meta_data' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -85,6 +86,18 @@ class WalletTransaction extends Model
         }
 
         return $query->where('type', $type);
+    }
+
+    /**
+     * Scope to filter by transaction status
+     */
+    public function scopeStatus(Builder $query, ?string $status): Builder
+    {
+        if (!$status) {
+            return $query;
+        }
+
+        return $query->where('status', $status);
     }
 
     /**

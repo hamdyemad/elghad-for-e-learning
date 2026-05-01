@@ -28,15 +28,17 @@ class WalletService
      * @return \App\Models\WalletTransaction
      * @throws \Exception
      */
-    public function deposit(User $user, $amount, $type = 'deposit', ?string $description = null, ?string $referenceId = null, ?string $referenceType = null)
+    public function deposit(User $user, $amount, $type = 'deposit', ?string $description = null, ?string $referenceId = null, ?string $referenceType = null, $status = 'completed', $gateway = null)
     {
         if ($amount <= 0) {
             throw new \Exception('Amount must be greater than zero');
         }
 
-        return DB::transaction(function () use ($user, $amount, $type, $description, $referenceId, $referenceType) {
-            // Update user balance
-            $user->increment('balance', $amount);
+        return DB::transaction(function () use ($user, $amount, $type, $description, $referenceId, $referenceType, $status, $gateway) {
+            // Update user balance ONLY if status is completed
+            if ($status === 'completed') {
+                $user->increment('balance', $amount);
+            }
 
             // Create transaction record via repository
             return $this->transactionRepository->create([
@@ -46,6 +48,8 @@ class WalletService
                 'description' => $description,
                 'reference_id' => $referenceId,
                 'reference_type' => $referenceType,
+                'status' => $status,
+                'gateway' => $gateway,
             ]);
         });
     }
@@ -62,7 +66,7 @@ class WalletService
      * @return \App\Models\WalletTransaction
      * @throws \Exception
      */
-    public function withdraw(User $user, $amount, $type = 'withdrawal', ?string $description = null, ?string $referenceId = null, ?string $referenceType = null)
+    public function withdraw(User $user, $amount, $type = 'withdrawal', ?string $description = null, ?string $referenceId = null, ?string $referenceType = null, $status = 'completed', $gateway = null)
     {
         if ($amount <= 0) {
             throw new \Exception('Amount must be greater than zero');
@@ -72,9 +76,11 @@ class WalletService
             throw new \Exception('Insufficient balance');
         }
 
-        return DB::transaction(function () use ($user, $amount, $type, $description, $referenceId, $referenceType) {
-            // Update user balance
-            $user->decrement('balance', $amount);
+        return DB::transaction(function () use ($user, $amount, $type, $description, $referenceId, $referenceType, $status, $gateway) {
+            // Update user balance ONLY if status is completed
+            if ($status === 'completed') {
+                $user->decrement('balance', $amount);
+            }
 
             // Create transaction record via repository and return it
             return $this->transactionRepository->create([
@@ -84,6 +90,8 @@ class WalletService
                 'description' => $description,
                 'reference_id' => $referenceId,
                 'reference_type' => $referenceType,
+                'status' => $status,
+                'gateway' => $gateway,
             ]);
         });
     }
@@ -121,7 +129,7 @@ class WalletService
      */
     public function getPaginatedTransactionsWithFilters(User $user, Request $request)
     {
-        $filters = $request->only(['search', 'type', 'date_from', 'date_to', 'per_page']);
+        $filters = $request->only(['search', 'type', 'status', 'date_from', 'date_to', 'per_page']);
         $filters = array_filter($filters, function ($value) {
             return $value !== '' && $value !== null;
         });
@@ -159,6 +167,7 @@ class WalletService
     {
         $net = $this->transactionRepository->getModel()
             ->where('user_id', $user->id)
+            ->where('status', 'completed')
             ->selectRaw("
                 SUM(
                     CASE

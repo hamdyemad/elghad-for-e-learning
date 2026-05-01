@@ -36,6 +36,10 @@ class WalletTransactionRepository implements WalletTransactionRepositoryInterfac
             $query->type($filters['type']);
         }
 
+        if (isset($filters['status'])) {
+            $query->status($filters['status']);
+        }
+
         if (isset($filters['date_from'])) {
             $query->dateFrom($filters['date_from']);
         }
@@ -71,6 +75,7 @@ class WalletTransactionRepository implements WalletTransactionRepositoryInterfac
         return (float) $this->model
             ->where('user_id', $userId)
             ->whereIn('type', ['deposit', 'refund', 'bonus'])
+            ->where('status', 'completed')
             ->sum('amount');
     }
 
@@ -82,6 +87,7 @@ class WalletTransactionRepository implements WalletTransactionRepositoryInterfac
         return (float) $this->model
             ->where('user_id', $userId)
             ->whereIn('type', ['withdrawal', 'charge'])
+            ->where('status', 'completed')
             ->sum('amount');
     }
 }

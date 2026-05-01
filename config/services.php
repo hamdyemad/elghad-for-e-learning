@@ -30,4 +30,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'tlync' => [
+        'id' => env('TLYNC_ID'),
+        'token' => env('TLYNC_TOKEN'),
+        'base_url' => env('TLYNC_BASE_URL', 'https://uat-api.tlync.ly/api/v3'),
+    ],
+
 ];

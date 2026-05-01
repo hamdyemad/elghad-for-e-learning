@@ -99,7 +99,16 @@
                                 name="type"
                                 label="{{ __('auth.type') }}"
                                 :value="request('type')"
-                                :options="['' => __('All Types'), 'deposit' => __('auth.deposit'), 'withdrawal' => __('auth.withdrawal'), 'refund' => __('auth.refund'), 'charge' => __('auth.charge'), 'bonus' => __('auth.bonus')]"
+                                :options="['' => __('auth.all_types'), 'deposit' => __('auth.deposit'), 'withdrawal' => __('auth.withdrawal'), 'refund' => __('auth.refund'), 'charge' => __('auth.charge'), 'bonus' => __('auth.bonus')]"
+                                :compact="true"
+                            />
+                        </div>
+                        <div class="col-md-2">
+                            <x-form-select
+                                name="status"
+                                label="{{ __('auth.status') }}"
+                                :value="request('status')"
+                                :options="['' => __('All Statuses'), 'pending' => __('auth.pending'), 'completed' => __('auth.completed'), 'failed' => __('auth.transaction_failed')]"
                                 :compact="true"
                             />
                         </div>
@@ -148,6 +157,7 @@
                                 <tr>
                                     <th>{{ __('auth.date') }}</th>
                                     <th>{{ __('auth.type') }}</th>
+                                    <th>{{ __('auth.status') }}</th>
                                     <th>{{ __('auth.amount') }}</th>
                                     <th>{{ __('auth.description') }}</th>
                                     <th>{{ __('auth.reference') }}</th>
@@ -176,13 +186,43 @@
                                             <span class="badge {{ $badgeClass }}">{{ $typeLabel }}</span>
                                         </td>
                                         <td>
-                                            <strong class="{{ in_array($transaction->type, ['deposit', 'refund', 'bonus']) ? 'text-success' : 'text-danger' }}">
+                                            @php
+                                                $statusBadgeClass = match($transaction->status) {
+                                                    'completed' => 'bg-success',
+                                                    'pending' => 'bg-warning',
+                                                    'failed' => 'bg-danger',
+                                                    default => 'bg-secondary'
+                                                };
+                                                $statusLabel = match($transaction->status) {
+                                                    'completed' => __('auth.completed'),
+                                                    'pending' => __('auth.pending'),
+                                                    'failed' => __('auth.transaction_failed'),
+                                                    default => $transaction->status
+                                                };
+                                            @endphp
+                                            <span class="badge {{ $statusBadgeClass }}">{{ $statusLabel }}</span>
+                                        </td>
+                                        <td>
+                                            @php
+                                                $amountColorClass = 'text-muted';
+                                                if ($transaction->status === 'completed') {
+                                                    $amountColorClass = in_array($transaction->type, ['deposit', 'refund', 'bonus']) ? 'text-success' : 'text-danger';
+                                                } elseif ($transaction->status === 'failed') {
+                                                    $amountColorClass = 'text-danger text-decoration-line-through';
+                                                }
+                                            @endphp
+                                            <strong class="{{ $amountColorClass }}">
                                                 {{ in_array($transaction->type, ['deposit', 'refund', 'bonus']) ? '+' : '-' }}
                                                 {{ format_currency($transaction->amount) }}
                                             </strong>
                                         </td>
                                         <td>{{ $transaction->description ?? '-' }}</td>
                                         <td>
+                                            @if($transaction->gateway)
+                                                <div class="mb-1">
+                                                    <span class="badge badge-soft-info">{{ strtoupper($transaction->gateway) }}</span>
+                                                </div>
+                                            @endif
                                             <small class="text-muted">{{ $transaction->reference_label }}</small>
                                         </td>
                                     </tr>

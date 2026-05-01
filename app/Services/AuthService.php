@@ -42,6 +42,14 @@ class AuthService
         $data['type'] = $data['type'] ?? 'student'; // Default to student
         $data['email_verified_at'] = null; // Not verified initially
 
+        // Normalize phone format (Libyan format starting with 0)
+        if (isset($data['phone'])) {
+            $phone = $data['phone'];
+            if (str_starts_with($phone, '218') || str_starts_with($phone, '+218')) {
+                $data['phone'] = '0' . substr($phone, -9);
+            }
+        }
+
         $user = $this->userRepository->create($data);
 
         // Assign default role (student)

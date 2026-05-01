@@ -16,6 +16,21 @@ class RegisterRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('phone')) {
+            $phone = $this->phone;
+            if (str_starts_with($phone, '218') || str_starts_with($phone, '+218')) {
+                $this->merge([
+                    'phone' => '0' . substr($phone, -9)
+                ]);
+            }
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -51,6 +66,12 @@ class RegisterRequest extends FormRequest
                 'min:8',
                 'confirmed'
             ],
+            'phone' => [
+                'required',
+                'string',
+                'regex:/^09[1245]\d{7}$/',
+                'unique:users,phone'
+            ],
             'type' => [
                 'nullable',
                 'string',
@@ -71,6 +92,9 @@ class RegisterRequest extends FormRequest
             'password.required' => __('validation.required', ['attribute' => 'password']),
             'password.min' => __('validation.min.string', ['attribute' => 'password', 'min' => 8]),
             'password.confirmed' => __('validation.confirmed', ['attribute' => 'password']),
+            'phone.required' => __('validation.required', ['attribute' => 'phone']),
+            'phone.regex' => __('validation.regex', ['attribute' => 'phone']),
+            'phone.unique' => __('validation.unique', ['attribute' => 'phone']),
             'type.in' => __('validation.in', ['attribute' => 'type']),
         ];
     }

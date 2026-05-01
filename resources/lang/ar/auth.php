@@ -106,5 +106,9 @@ return [
     'insufficient_balance_subscription' => 'رصيد المحفظة غير كافي. المطلوب: :amount ' . config('currency.symbol'),
     'course_subscription' => 'اشتراك دورة: :title',
     'package_subscription' => 'اشتراك باقة: :title',
+    'status' => 'الحالة',
+    'completed' => 'مكتمل',
+    'pending' => 'قيد الانتظار',
+    'transaction_failed' => 'فشلت',
 
 ];

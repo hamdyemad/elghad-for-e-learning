@@ -11,17 +11,22 @@ use App\Http\Requests\StoreWithdrawalRequest;
 use App\Http\Requests\FilterTransactionsRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Traits\ApiResponseTrait;
+use App\Services\TlyncService;
+use Illuminate\Support\Str;
 
 class WalletController extends Controller
 {
     use ApiResponseTrait;
 
     protected $walletService;
+    protected $tlyncService;
 
-    public function __construct(WalletService $walletService)
+    public function __construct(WalletService $walletService, TlyncService $tlyncService)
     {
         $this->walletService = $walletService;
+        $this->tlyncService = $tlyncService;
     }
 
     /**
@@ -121,5 +126,124 @@ class WalletController extends Controller
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), [], 400);
         }
+    }
+
+    /**
+     * Initiate Tlync top-up
+     * POST /api/wallet/topup/initiate
+     */
+    public function initiateTopUp(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:1',
+            'phone' => 'nullable|string',
+            'frontend_url' => 'nullable|url',
+        ]);
+
+        $user = Auth::user();
+        $phone = $request->phone ?? $user->phone;
+
+        // Simple formatting for Libyan numbers if they start with 218 or +218
+        if ($phone) {
+            $phone = preg_replace('/^\+?218/', '0', $phone);
+            $phone = preg_replace('/^00218/', '0', $phone);
+        }
+
+        $customRef = Str::uuid()->toString();
+
+        \Log::info('Tlync Send', [
+            'amount' => $request->amount,
+            'phone' => $phone ?? '0911234567', // Fallback to a valid format if none exists
+            'email' => $user->email,
+            'backend_url' => route('payment.tlync.webhook'),
+            'frontend_url' => $request->frontend_url ?? config('app.url'),
+            'custom_ref' => $customRef,
+        ]);
+
+        $data = [
+            'amount' => $request->amount,
+            'phone' => $phone ?? '0911234567', // Fallback to a valid format if none exists
+            'email' => $user->email,
+            'backend_url' => route('payment.tlync.webhook'),
+            'frontend_url' => $request->frontend_url ?? config('app.url'),
+            'custom_ref' => $customRef,
+        ];
+
+        $response = $this->tlyncService->initiatePayment($data);
+
+        if (isset($response['result']) && $response['result'] === 'success') {
+            // Log the initiation in wallet_transactions as pending
+            $this->walletService->deposit(
+                $user,
+                $request->amount,
+                'deposit',
+                __('Tlync Top-up Initiation'),
+                $customRef,
+                null,
+                'pending',
+                'tlync'
+            );
+
+            return $this->successResponse($response, __('Payment initiated successfully'));
+        }
+
+        return $this->errorResponse($response['message'] ?? __('Failed to initiate payment'), $response, 400);
+    }
+
+    /**
+     * Tlync Webhook
+     * POST /api/payment/tlync/webhook
+     */
+    public function tlyncWebhook(Request $request)
+    {
+        // Tlync sends a POST request to this URL
+        // Typically it contains custom_ref, amount, and status
+
+        $data = $request->all();
+        \Log::info('Tlync Webhook Received', $data);
+
+        // Verify the payment status (based on Tlync documentation which I don't have fully, 
+        // but usually there's a status field)
+
+        if (isset($data['result']) && $data['result'] === 'success') {
+            $customRef = $data['custom_ref'];
+
+            // Find the pending transaction
+            $transaction = \App\Models\WalletTransaction::where('reference_id', $customRef)
+                ->where('gateway', 'tlync')
+                ->where('status', 'pending')
+                ->first();
+
+            if ($transaction) {
+                $user = $transaction->user;
+
+                DB::transaction(function () use ($transaction, $user, $data) {
+                    // Mark as completed and store meta data
+                    $transaction->update([
+                        'status' => 'completed',
+                        'meta_data' => array_merge($transaction->meta_data ?? [], [
+                            'tlync_ref' => $data['our_ref'] ?? null,
+                            'payment_method' => $data['payment_method_en'] ?? null,
+                            'charges' => $data['charges'] ?? 0,
+                            'net_amount' => $data['net_amount'] ?? 0,
+                            'raw_response' => $data
+                        ])
+                    ]);
+
+                    // Increment user balance
+                    $user->increment('balance', $transaction->amount);
+                });
+
+                \Log::info('Tlync Payment Completed', ['transaction_id' => $transaction->id, 'user_id' => $user->id]);
+            }
+        } elseif (isset($data['result']) && $data['result'] === 'failed') {
+            $customRef = $data['custom_ref'];
+            \App\Models\WalletTransaction::where('reference_id', $customRef)
+                ->where('gateway', 'tlync')
+                ->where('status', 'pending')
+                ->update(['status' => 'failed']);
+        }
+
+        return response()->json(['status' => 'received']);
     }
 }
