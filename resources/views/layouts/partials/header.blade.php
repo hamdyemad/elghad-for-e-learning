@@ -98,109 +98,37 @@
                         </button>
                     </div>
 
-                    {{-- <div class="dropdown d-inline-block ml-1">
+                    <div class="dropdown d-inline-block ml-1">
                         <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="ti-bell"></i>
-                            <span class="badge badge-danger badge-pill">3</span>
+                            <i class="mdi mdi-bell"></i>
+                            <span class="badge badge-danger badge-pill notification-badge" id="notification-count" style="display: none;">0</span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right p-0"
                             aria-labelledby="page-header-notifications-dropdown">
                             <div class="p-3">
                                 <div class="row align-items-center">
                                     <div class="col">
-                                        <h5 class="m-0"> Notifications (258) </h5>
+                                        <h5 class="m-0">الإشعارات</h5>
+                                    </div>
+                                    <div class="col-auto">
+                                        <a href="javascript:void(0)" id="mark-all-read" class="text-primary small">تحديد الكل كمقروء</a>
                                     </div>
                                 </div>
                             </div>
-                            <div data-simplebar style="max-height: 230px;">
-                                <a href="" class="text-reset notification-item">
-                                    <div class="media">
-                                        <div class="avatar-xs mr-3">
-                                            <span class="avatar-title border-success rounded-circle ">
-                                                <i class="mdi mdi-cart-outline"></i>
-                                            </span>
-                                        </div>
-                                        <div class="media-body">
-                                            <h6 class="mt-0 mb-1">Your order is placed</h6>
-                                            <div class="text-muted">
-                                                <p class="mb-1">If several languages coalesce the grammar</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <a href="" class="text-reset notification-item">
-                                    <div class="media">
-                                        <div class="avatar-xs mr-3">
-                                            <span class="avatar-title border-warning rounded-circle ">
-                                                <i class="mdi mdi-message"></i>
-                                            </span>
-                                        </div>
-                                        <div class="media-body">
-                                            <h6 class="mt-0 mb-1">New Message received</h6>
-                                            <div class="text-muted">
-                                                <p class="mb-1">You have 87 unread messages</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <a href="" class="text-reset notification-item">
-                                    <div class="media">
-                                        <div class="avatar-xs mr-3">
-                                            <span class="avatar-title border-info rounded-circle ">
-                                                <i class="mdi mdi-glass-cocktail"></i>
-                                            </span>
-                                        </div>
-                                        <div class="media-body">
-                                            <h6 class="mt-0 mb-1">Your item is shipped</h6>
-                                            <div class="text-muted">
-                                                <p class="mb-1">It is a long established fact that a reader will</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <a href="" class="text-reset notification-item">
-                                    <div class="media">
-                                        <div class="avatar-xs mr-3">
-                                            <span class="avatar-title border-primary rounded-circle ">
-                                                <i class="mdi mdi-cart-outline"></i>
-                                            </span>
-                                        </div>
-                                        <div class="media-body">
-                                            <h6 class="mt-0 mb-1">Your order is placed</h6>
-                                            <div class="text-muted">
-                                                <p class="mb-1">Dummy text of the printing and typesetting industry.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <a href="" class="text-reset notification-item">
-                                    <div class="media">
-                                        <div class="avatar-xs mr-3">
-                                            <span class="avatar-title border-warning rounded-circle ">
-                                                <i class="mdi mdi-message"></i>
-                                            </span>
-                                        </div>
-                                        <div class="media-body">
-                                            <h6 class="mt-0 mb-1">New Message received</h6>
-                                            <div class="text-muted">
-                                                <p class="mb-1">You have 87 unread messages</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
+                            <div data-simplebar style="max-height: 230px;" id="notifications-list">
+                                <div class="text-center p-3">
+                                    <i class="mdi mdi-bell-off-outline text-muted"></i>
+                                    <p class="text-muted mb-0">لا توجد إشعارات</p>
+                                </div>
                             </div>
                             <div class="p-2 border-top">
-                                <a class="btn btn-sm btn-link font-size-14 btn-block text-center" href="javascript:void(0)">
-                                    View all
+                                <a class="btn btn-sm btn-link font-size-14 btn-block text-center" href="{{ route('dashboard.notifications.index') }}">
+                                    عرض الكل
                                 </a>
                             </div>
                         </div>
-                    </div> --}}
+                    </div>
             
 
                     <div class="dropdown d-inline-block">

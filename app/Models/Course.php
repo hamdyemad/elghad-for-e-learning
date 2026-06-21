@@ -68,6 +68,38 @@ class Course extends Model
             ->orWhere('course_student.expires_at', '>', now());
     }
 
+    /**
+     * Course summaries (PDF files)
+     */
+    public function summaries()
+    {
+        return $this->hasMany(CourseSummary::class);
+    }
+
+    /**
+     * Course exams
+     */
+    public function exams()
+    {
+        return $this->hasMany(Exam::class);
+    }
+
+    /**
+     * Course live streams
+     */
+    public function liveStreams()
+    {
+        return $this->hasMany(LiveStream::class);
+    }
+
+    /**
+     * Active live stream
+     */
+    public function activeLiveStream()
+    {
+        return $this->hasOne(LiveStream::class)->where('is_active', true);
+    }
+
     protected static function boot()
     {
         parent::boot();

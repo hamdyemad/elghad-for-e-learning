@@ -36,4 +36,9 @@ return [
         'base_url' => env('TLYNC_BASE_URL', 'https://uat-api.tlync.ly/api/v3'),
     ],
 
+    'firebase' => [
+        'server_key' => env('FIREBASE_SERVER_KEY'),
+        'sender_id' => env('FIREBASE_SENDER_ID'),
+    ],
+
 ];

@@ -31,7 +31,7 @@ class CourseRepository implements CourseRepositoryInterface
 
     public function findById(int $id)
     {
-        return $this->model->with(['category', 'instructor', 'lessons'])->findOrFail($id);
+        return $this->model->with(['category', 'instructor', 'lessons', 'students'])->findOrFail($id);
     }
 
     public function create(array $data)

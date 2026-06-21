@@ -60,6 +60,26 @@ class AppServiceProvider extends ServiceProvider
             \App\Interfaces\WalletTransactionRepositoryInterface::class,
             \App\Repositories\WalletTransactionRepository::class
         );
+
+        $this->app->bind(
+            \App\Interfaces\NotificationRepositoryInterface::class,
+            \App\Repositories\NotificationRepository::class
+        );
+
+        $this->app->bind(
+            \App\Interfaces\CourseSummaryRepositoryInterface::class,
+            \App\Repositories\CourseSummaryRepository::class
+        );
+
+        $this->app->bind(
+            \App\Interfaces\ExamRepositoryInterface::class,
+            \App\Repositories\ExamRepository::class
+        );
+
+        $this->app->bind(
+            \App\Interfaces\LiveStreamRepositoryInterface::class,
+            \App\Repositories\LiveStreamRepository::class
+        );
     }
 
     /**

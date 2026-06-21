@@ -61,7 +61,8 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $this->authService->logout($request->user());
+        $fcmToken = $request->input('fcm_token');
+        $this->authService->logout($request->user(), $fcmToken);
 
         return $this->successResponse([], __('auth.logout_success'));
     }

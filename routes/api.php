@@ -69,6 +69,14 @@ Route::middleware('auth:sanctum')->prefix('courses')->name('api.courses.')->grou
     Route::get('/', [\App\Http\Controllers\Api\CourseController::class, 'index'])->name('index');
     Route::get('/free', [\App\Http\Controllers\Api\CourseController::class, 'free'])->name('free');
     Route::get('/{id}', [\App\Http\Controllers\Api\CourseController::class, 'show'])->name('show');
+    Route::get('/{id}/summaries', [\App\Http\Controllers\Api\CourseSummaryController::class, 'index'])->name('summaries');
+    Route::get('/{id}/exams', [\App\Http\Controllers\Api\ExamController::class, 'index'])->name('exams');
+    Route::get('/{id}/live', [\App\Http\Controllers\Api\LiveStreamController::class, 'show'])->name('live');
+});
+
+// User Exams API Routes (require authentication)
+Route::middleware('auth:sanctum')->prefix('exams')->name('api.exams.')->group(function () {
+    Route::get('/{id}', [\App\Http\Controllers\Api\ExamController::class, 'show'])->name('show');
 });
 
 // User Packages API Routes (require authentication)
@@ -92,6 +100,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/subscribe', [\App\Http\Controllers\Api\SubscriptionController::class, 'subscribe'])->name('api.subscribe');
     Route::delete('/subscribe', [\App\Http\Controllers\Api\SubscriptionController::class, 'unsubscribe'])->name('api.subscribe.delete');
     Route::get('/subscriptions', [\App\Http\Controllers\Api\SubscriptionController::class, 'index'])->name('api.subscriptions.index');
+
+    // User Notifications
+    Route::prefix('notifications')->name('api.notifications.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\NotificationController::class, 'index'])->name('index');
+        Route::get('/unread-count', [\App\Http\Controllers\Api\NotificationController::class, 'unreadCount'])->name('unread-count');
+        Route::post('/read-all', [\App\Http\Controllers\Api\NotificationController::class, 'markAllAsRead'])->name('read-all');
+        Route::post('/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markAsRead'])->name('read');
+    });
 });
 
 // Admin Dashboard API Routes (Require authentication + admin role)
@@ -179,6 +195,46 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('dashboard')->group(fu
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Dashboard\Api\SiteSettingController::class, 'show'])->name('show');
         Route::put('/', [\App\Http\Controllers\Dashboard\Api\SiteSettingController::class, 'update'])->name('update');
+    });
+
+    // Notifications (Admin only)
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Dashboard\Api\NotificationController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Dashboard\Api\NotificationController::class, 'store'])->name('store');
+        Route::get('/students', [\App\Http\Controllers\Dashboard\Api\NotificationController::class, 'students'])->name('students');
+        Route::get('/instructors', [\App\Http\Controllers\Dashboard\Api\NotificationController::class, 'instructors'])->name('instructors');
+        Route::get('/{id}', [\App\Http\Controllers\Dashboard\Api\NotificationController::class, 'show'])->name('show');
+        Route::delete('/{id}', [\App\Http\Controllers\Dashboard\Api\NotificationController::class, 'destroy'])->name('destroy');
+    });
+
+    // Course Summaries (Admin only)
+    Route::prefix('course-summaries')->name('course-summaries.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Dashboard\Api\CourseSummaryController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Dashboard\Api\CourseSummaryController::class, 'store'])->name('store');
+        Route::get('/courses', [\App\Http\Controllers\Dashboard\Api\CourseSummaryController::class, 'courses'])->name('courses');
+        Route::get('/{id}', [\App\Http\Controllers\Dashboard\Api\CourseSummaryController::class, 'show'])->name('show');
+        Route::put('/{id}', [\App\Http\Controllers\Dashboard\Api\CourseSummaryController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\Dashboard\Api\CourseSummaryController::class, 'destroy'])->name('destroy');
+    });
+
+    // Exams (Admin only)
+    Route::prefix('exams')->name('exams.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Dashboard\Api\ExamController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Dashboard\Api\ExamController::class, 'store'])->name('store');
+        Route::get('/courses', [\App\Http\Controllers\Dashboard\Api\ExamController::class, 'courses'])->name('courses');
+        Route::get('/{id}', [\App\Http\Controllers\Dashboard\Api\ExamController::class, 'show'])->name('show');
+        Route::put('/{id}', [\App\Http\Controllers\Dashboard\Api\ExamController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\Dashboard\Api\ExamController::class, 'destroy'])->name('destroy');
+    });
+
+    // Live Streams (Admin only)
+    Route::prefix('live-streams')->name('live-streams.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Dashboard\Api\LiveStreamController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Dashboard\Api\LiveStreamController::class, 'store'])->name('store');
+        Route::get('/courses', [\App\Http\Controllers\Dashboard\Api\LiveStreamController::class, 'courses'])->name('courses');
+        Route::get('/{id}', [\App\Http\Controllers\Dashboard\Api\LiveStreamController::class, 'show'])->name('show');
+        Route::put('/{id}', [\App\Http\Controllers\Dashboard\Api\LiveStreamController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\Dashboard\Api\LiveStreamController::class, 'destroy'])->name('destroy');
     });
 
     // Instructors CRUD (Admin only)

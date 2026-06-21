@@ -44,6 +44,20 @@
                             </a>
                         </li>
 
+                        <li>
+                            <a href="{{ route('dashboard.exams.all') }}" class="waves-effect">
+                                <i class="mdi mdi-clipboard-text-outline"></i>
+                                <span>الاختبارات</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('dashboard.live-streams.all') }}" class="waves-effect">
+                                <i class="mdi mdi-broadcast"></i>
+                                <span>البث المباشر</span>
+                            </a>
+                        </li>
+
                         <li class="menu-title">المستخدمين</li>
 
                         <li>
@@ -66,6 +80,13 @@
                             <a href="{{ route('dashboard.settings.edit') }}" class="waves-effect">
                                 <i class="mdi mdi-settings-outline"></i>
                                 <span>إعدادات الموقع</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('dashboard.notifications.index') }}" class="waves-effect">
+                                <i class="mdi mdi-bell-ring-outline"></i>
+                                <span>الإشعارات</span>
                             </a>
                         </li>
 

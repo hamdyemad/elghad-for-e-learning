@@ -112,6 +112,14 @@ class User extends Authenticatable
     }
 
     /**
+     * FCM tokens for push notifications
+     */
+    public function fcmTokens()
+    {
+        return $this->hasMany(UserFcmToken::class);
+    }
+
+    /**
      * Active package subscriptions
      */
     public function activeSubscriptions()

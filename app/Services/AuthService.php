@@ -91,16 +91,43 @@ class AuthService
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        // Save FCM token if provided
+        if (!empty($credentials['fcm_token'])) {
+            $this->saveFcmToken($user, $credentials['fcm_token'], $credentials['platform'] ?? null);
+        }
+
         return [
             'token' => $token,
             'token_type' => 'Bearer'
         ];
     }
 
-    public function logout($user)
+    public function logout($user, ?string $fcmToken = null)
     {
+        // Remove specific FCM token if provided
+        if ($fcmToken) {
+            $user->fcmTokens()->where('fcm_token', $fcmToken)->delete();
+        }
+
         $user->tokens()->delete();
         return true;
+    }
+
+    /**
+     * Save FCM token for user
+     */
+    protected function saveFcmToken($user, string $fcmToken, ?string $platform = null): void
+    {
+        \App\Models\UserFcmToken::updateOrCreate(
+            [
+                'user_id' => $user->id,
+                'fcm_token' => $fcmToken,
+            ],
+            [
+                'platform' => $platform,
+                'last_used_at' => now(),
+            ]
+        );
     }
 
     public function getProfile($user)

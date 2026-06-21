@@ -32,7 +32,17 @@ class LoginRequest extends FormRequest
                 'required',
                 'string',
                 'min:6'
-            ]
+            ],
+            'fcm_token' => [
+                'nullable',
+                'string',
+                'max:500'
+            ],
+            'platform' => [
+                'nullable',
+                'string',
+                'in:ios,android,web'
+            ],
         ];
     }
 

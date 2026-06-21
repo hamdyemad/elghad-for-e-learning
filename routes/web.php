@@ -30,6 +30,48 @@ Route::prefix('dashboard')->middleware('auth')->name('dashboard.')->group(functi
     Route::put('settings', [\App\Http\Controllers\Dashboard\SiteSettingController::class, 'update'])->name('settings.update');
     Route::delete('lessons/{id}', [\App\Http\Controllers\Dashboard\LessonController::class, 'destroy'])->name('lessons.destroy');
 
+    // Notifications Management
+    Route::resource('notifications', \App\Http\Controllers\Dashboard\NotificationController::class)->except(['edit', 'update']);
+
+    // Course Summaries Management (nested under courses)
+    Route::prefix('courses/{course}')->name('courses.summaries.')->group(function () {
+        Route::get('/summaries', [\App\Http\Controllers\Dashboard\CourseSummaryController::class, 'index'])->name('index');
+        Route::get('/summaries/create', [\App\Http\Controllers\Dashboard\CourseSummaryController::class, 'create'])->name('create');
+        Route::post('/summaries', [\App\Http\Controllers\Dashboard\CourseSummaryController::class, 'store'])->name('store');
+        Route::get('/summaries/{summary}', [\App\Http\Controllers\Dashboard\CourseSummaryController::class, 'show'])->name('show');
+        Route::get('/summaries/{summary}/edit', [\App\Http\Controllers\Dashboard\CourseSummaryController::class, 'edit'])->name('edit');
+        Route::put('/summaries/{summary}', [\App\Http\Controllers\Dashboard\CourseSummaryController::class, 'update'])->name('update');
+        Route::delete('/summaries/{summary}', [\App\Http\Controllers\Dashboard\CourseSummaryController::class, 'destroy'])->name('destroy');
+    });
+
+    // Exams Management (all exams)
+    Route::get('exams', [\App\Http\Controllers\Dashboard\ExamController::class, 'allExams'])->name('exams.all');
+
+    // Live Streams Management (all)
+    Route::get('live-streams', [\App\Http\Controllers\Dashboard\LiveStreamController::class, 'allLiveStreams'])->name('live-streams.all');
+
+    // Course Exams Management (nested under courses)
+    Route::prefix('courses/{course}')->name('courses.exams.')->group(function () {
+        Route::get('/exams', [\App\Http\Controllers\Dashboard\ExamController::class, 'index'])->name('index');
+        Route::get('/exams/create', [\App\Http\Controllers\Dashboard\ExamController::class, 'create'])->name('create');
+        Route::post('/exams', [\App\Http\Controllers\Dashboard\ExamController::class, 'store'])->name('store');
+        Route::get('/exams/{exam}', [\App\Http\Controllers\Dashboard\ExamController::class, 'show'])->name('show');
+        Route::get('/exams/{exam}/edit', [\App\Http\Controllers\Dashboard\ExamController::class, 'edit'])->name('edit');
+        Route::put('/exams/{exam}', [\App\Http\Controllers\Dashboard\ExamController::class, 'update'])->name('update');
+        Route::delete('/exams/{exam}', [\App\Http\Controllers\Dashboard\ExamController::class, 'destroy'])->name('destroy');
+    });
+
+    // Course Live Streams Management (nested under courses)
+    Route::prefix('courses/{course}')->name('courses.live-streams.')->group(function () {
+        Route::get('/live-streams', [\App\Http\Controllers\Dashboard\LiveStreamController::class, 'index'])->name('index');
+        Route::get('/live-streams/create', [\App\Http\Controllers\Dashboard\LiveStreamController::class, 'create'])->name('create');
+        Route::post('/live-streams', [\App\Http\Controllers\Dashboard\LiveStreamController::class, 'store'])->name('store');
+        Route::get('/live-streams/{liveStream}', [\App\Http\Controllers\Dashboard\LiveStreamController::class, 'show'])->name('show');
+        Route::get('/live-streams/{liveStream}/edit', [\App\Http\Controllers\Dashboard\LiveStreamController::class, 'edit'])->name('edit');
+        Route::put('/live-streams/{liveStream}', [\App\Http\Controllers\Dashboard\LiveStreamController::class, 'update'])->name('update');
+        Route::delete('/live-streams/{liveStream}', [\App\Http\Controllers\Dashboard\LiveStreamController::class, 'destroy'])->name('destroy');
+    });
+
     // Students Management
     Route::resource('students', \App\Http\Controllers\Dashboard\StudentController::class);
     Route::post('students/{id}/upgrade-to-instructor', [\App\Http\Controllers\Dashboard\StudentController::class, 'upgradeToInstructor'])->name('students.upgrade-to-instructor')->middleware('role:admin');

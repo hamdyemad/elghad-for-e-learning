@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Lexa Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ URL::asset('/images/logo.webp')}}">
     
@@ -280,6 +281,81 @@
                         preloader.style.display = 'none';
                     }
                 }, 2000);
+
+                // Notifications
+                (function() {
+                    const countEl = document.getElementById('notification-count');
+                    const listEl = document.getElementById('notifications-list');
+                    const markAllBtn = document.getElementById('mark-all-read');
+
+                    if (!countEl || !listEl) return;
+
+                    function loadNotifications() {
+                        fetch('/api/notifications/unread-count', {
+                            headers: { 'Accept': 'application/json' }
+                        })
+                        .then(r => r.json())
+                        .then(res => {
+                            if (res.success && res.data.count > 0) {
+                                countEl.textContent = res.data.count;
+                                countEl.style.display = 'inline-block';
+                            } else {
+                                countEl.style.display = 'none';
+                            }
+                        })
+                        .catch(() => {});
+
+                        fetch('/api/notifications?per_page=5', {
+                            headers: { 'Accept': 'application/json' }
+                        })
+                        .then(r => r.json())
+                        .then(res => {
+                            if (res.success && res.data.notifications.length > 0) {
+                                let html = '';
+                                res.data.notifications.forEach(n => {
+                                    const readClass = n.is_read ? '' : 'border-left border-primary';
+                                    html += '<a href="/dashboard/notifications/' + n.id + '" class="text-reset notification-item ' + readClass + '">' +
+                                        '<div class="media">' +
+                                        '<div class="avatar-xs mr-3">' +
+                                        '<span class="avatar-title border-success rounded-circle">' +
+                                        '<i class="mdi mdi-bell"></i>' +
+                                        '</span>' +
+                                        '</div>' +
+                                        '<div class="media-body">' +
+                                        '<h6 class="mt-0 mb-1">' + n.title + '</h6>' +
+                                        '<div class="text-muted"><p class="mb-1">' + n.body.substring(0, 50) + '</p></div>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '</a>';
+                                });
+                                listEl.innerHTML = html;
+                            } else {
+                                listEl.innerHTML = '<div class="text-center p-3"><i class="mdi mdi-bell-off-outline text-muted"></i><p class="text-muted mb-0">لا توجد إشعارات</p></div>';
+                            }
+                        })
+                        .catch(() => {});
+                    }
+
+                    loadNotifications();
+                    setInterval(loadNotifications, 60000);
+
+                    if (markAllBtn) {
+                        markAllBtn.addEventListener('click', function() {
+                            fetch('/api/notifications/read-all', {
+                                method: 'PUT',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                                }
+                            })
+                            .then(r => r.json())
+                            .then(() => {
+                                loadNotifications();
+                            })
+                            .catch(() => {});
+                        });
+                    }
+                })();
             </script>
 </body>
 

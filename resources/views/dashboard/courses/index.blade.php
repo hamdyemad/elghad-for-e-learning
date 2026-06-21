@@ -111,14 +111,37 @@
                             }
                         ]
                     ];
+
+                    $actions = function($row) {
+                        $summariesUrl = route('dashboard.courses.summaries.index', $row->id);
+                        $summariesCount = $row->summaries()->count();
+                        return '
+                            <a href="' . $summariesUrl . '" class="btn btn-sm btn-info mx-1" title="الملخصات">
+                                <i class="mdi mdi-file-document-outline"></i>
+                                ' . ($summariesCount > 0 ? '<span class="badge badge-light">' . $summariesCount . '</span>' : '') . '
+                            </a>
+                            <a href="' . route('dashboard.courses.show', $row->id) . '" class="btn btn-sm btn-info mx-1">
+                                <i class="mdi mdi-eye"></i>
+                            </a>
+                            <a href="' . route('dashboard.courses.edit', $row->id) . '" class="btn btn-sm btn-warning mx-1">
+                                <i class="mdi mdi-pencil"></i>
+                            </a>
+                            <form action="' . route('dashboard.courses.destroy', $row->id) . '" method="POST" class="d-inline"
+                                  onsubmit="return confirm(\'هل أنت متأكد من حذف هذا الكورس؟\');">
+                                ' . csrf_field() . method_field('DELETE') . '
+                                <button type="submit" class="btn btn-sm btn-danger mx-1">
+                                    <i class="mdi mdi-delete"></i>
+                                </button>
+                            </form>
+                        ';
+                    };
                 @endphp
 
                 <x-data-table
                     :columns="$columns"
                     :rows="$courses"
                     :pagination="$courses"
-                    route="dashboard.courses"
-                    :actions="true"
+                    :actions="$actions"
                     empty-message="لا توجد كورسات بعد"
                 />
             </div>
