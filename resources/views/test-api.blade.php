@@ -319,62 +319,6 @@
         }
     }
 
-        const btn = document.getElementById('payBtn');
-        const loading = document.getElementById('step2Loading');
-        const responseEl = document.getElementById('step2Response');
-        const step = document.getElementById('step2');
-
-        btn.disabled = true;
-        loading.classList.remove('d-none');
-        responseEl.classList.add('d-none');
-        step.className = 'step active';
-
-        const body = {
-            "IdentityCard": document.getElementById('identityCard').value,
-            "Amount": parseFloat(document.getElementById('amount').value),
-            "TransactionID": parseInt(document.getElementById('transactionId').value),
-            "OnlineOperation": parseInt(document.getElementById('onlineOperation').value)
-        };
-
-        appendLog('--- Step 2: OpenSession ---');
-        appendLog('POST ' + document.getElementById('paymentUrl').value);
-        appendLog('Body: ' + JSON.stringify(body));
-
-        try {
-            const res = await fetch('/test-api-payment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    url: document.getElementById('paymentUrl').value,
-                    body: JSON.stringify(body),
-                    token: jwtToken
-                })
-            });
-            const data = await res.json();
-
-            responseEl.classList.remove('d-none');
-            responseEl.textContent = JSON.stringify(data, null, 2);
-
-            appendLog('HTTP ' + data.http_code);
-            appendLog('Response: ' + JSON.stringify(data.response));
-            step.className = data.http_code >= 200 && data.http_code < 300 ? 'step done' : 'step';
-
-            if (data.response && data.response.type === 1) {
-                document.getElementById('completeBtn').disabled = false;
-                appendLog('Payment accepted. Proceed to Step 3 with OTP.\n');
-            } else {
-                appendLog('Payment NOT accepted. Check response.\n');
-            }
-        } catch (err) {
-            responseEl.classList.remove('d-none');
-            responseEl.textContent = 'Error: ' + err.message;
-            appendLog('Error: ' + err.message);
-            step.className = 'step';
-        } finally {
-            btn.disabled = false;
-            loading.classList.add('d-none');
-        }
-    }
     </script>
 </body>
 </html>
