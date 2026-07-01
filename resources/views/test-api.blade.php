@@ -87,6 +87,29 @@
                     <pre id="step2Response" class="mt-2 d-none"></pre>
                 </div>
 
+                <!-- Step 3: CompleteSession -->
+                <div class="step" id="step3">
+                    <h5>Step 3: CompleteSession (Verify OTP)</h5>
+                    <div class="alert alert-warning small mb-3">
+                        Enter the OTP received by the customer to complete the payment.
+                    </div>
+                    <div class="form-group">
+                        <label>URL</label>
+                        <input type="text" class="form-control" id="completeUrl" value="http://160.19.103.122:40120/YusorOnline/api/OnlinePaymentServices/CompleteSession?culture=ar-LY">
+                    </div>
+                    <div class="form-group">
+                        <label>OTP (Verification Code)</label>
+                        <input type="text" class="form-control" id="otp" placeholder="Enter OTP">
+                    </div>
+                    <button type="button" class="btn btn-primary btn-block" onclick="doComplete()" id="completeBtn" disabled>
+                        Complete Session
+                    </button>
+                    <div id="step3Loading" class="text-center d-none mt-2">
+                        <div class="spinner-border spinner-border-sm text-primary"></div> Sending...
+                    </div>
+                    <pre id="step3Response" class="mt-2 d-none"></pre>
+                </div>
+
             </div>
 
             <div class="col-md-6">
@@ -214,6 +237,134 @@
             appendLog('HTTP ' + data.http_code);
             appendLog('Response: ' + JSON.stringify(data.response));
             step.className = data.http_code >= 200 && data.http_code < 300 ? 'step done' : 'step';
+
+            if (data.response && data.response.type === 1) {
+                document.getElementById('completeBtn').disabled = false;
+                appendLog('Payment accepted. Proceed to Step 3 with OTP.\n');
+            } else {
+                appendLog('Payment NOT accepted. Check response.\n');
+            }
+        } catch (err) {
+            responseEl.classList.remove('d-none');
+            responseEl.textContent = 'Error: ' + err.message;
+            appendLog('Error: ' + err.message);
+            step.className = 'step';
+        } finally {
+            btn.disabled = false;
+            loading.classList.add('d-none');
+        }
+    }
+
+    async function doComplete() {
+        if (!jwtToken) {
+            alert('Please complete Step 1 first');
+            return;
+        }
+
+        const otp = document.getElementById('otp').value.trim();
+        if (!otp) {
+            alert('Please enter the OTP');
+            return;
+        }
+
+        const btn = document.getElementById('completeBtn');
+        const loading = document.getElementById('step3Loading');
+        const responseEl = document.getElementById('step3Response');
+        const step = document.getElementById('step3');
+
+        btn.disabled = true;
+        loading.classList.remove('d-none');
+        responseEl.classList.add('d-none');
+        step.className = 'step active';
+
+        const body = JSON.stringify({ "OTP": otp });
+
+        appendLog('--- Step 3: CompleteSession ---');
+        appendLog('POST ' + document.getElementById('completeUrl').value);
+        appendLog('Body: ' + body);
+
+        try {
+            const res = await fetch('/test-api-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    url: document.getElementById('completeUrl').value,
+                    body: body,
+                    token: jwtToken
+                })
+            });
+            const data = await res.json();
+
+            responseEl.classList.remove('d-none');
+            responseEl.textContent = JSON.stringify(data, null, 2);
+
+            appendLog('HTTP ' + data.http_code);
+            appendLog('Response: ' + JSON.stringify(data.response));
+
+            if (data.response && data.response.type === 1) {
+                step.className = 'step done';
+                appendLog('SUCCESS: Operation completed!\n');
+            } else {
+                step.className = 'step';
+                appendLog('Result type: ' + (data.response?.type || 'N/A') + ' - ' + (data.response?.message || '') + '\n');
+            }
+        } catch (err) {
+            responseEl.classList.remove('d-none');
+            responseEl.textContent = 'Error: ' + err.message;
+            appendLog('Error: ' + err.message);
+            step.className = 'step';
+        } finally {
+            btn.disabled = false;
+            loading.classList.add('d-none');
+        }
+    }
+
+        const btn = document.getElementById('payBtn');
+        const loading = document.getElementById('step2Loading');
+        const responseEl = document.getElementById('step2Response');
+        const step = document.getElementById('step2');
+
+        btn.disabled = true;
+        loading.classList.remove('d-none');
+        responseEl.classList.add('d-none');
+        step.className = 'step active';
+
+        const body = {
+            "IdentityCard": document.getElementById('identityCard').value,
+            "Amount": parseFloat(document.getElementById('amount').value),
+            "TransactionID": parseInt(document.getElementById('transactionId').value),
+            "OnlineOperation": parseInt(document.getElementById('onlineOperation').value)
+        };
+
+        appendLog('--- Step 2: OpenSession ---');
+        appendLog('POST ' + document.getElementById('paymentUrl').value);
+        appendLog('Body: ' + JSON.stringify(body));
+
+        try {
+            const res = await fetch('/test-api-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    url: document.getElementById('paymentUrl').value,
+                    body: JSON.stringify(body),
+                    token: jwtToken
+                })
+            });
+            const data = await res.json();
+
+            responseEl.classList.remove('d-none');
+            responseEl.textContent = JSON.stringify(data, null, 2);
+
+            appendLog('HTTP ' + data.http_code);
+            appendLog('Response: ' + JSON.stringify(data.response));
+            step.className = data.http_code >= 200 && data.http_code < 300 ? 'step done' : 'step';
+
+            if (data.response && data.response.type === 1) {
+                document.getElementById('completeBtn').disabled = false;
+                appendLog('Payment accepted. Proceed to Step 3 with OTP.\n');
+            } else {
+                appendLog('Payment NOT accepted. Check response.\n');
+            }
         } catch (err) {
             responseEl.classList.remove('d-none');
             responseEl.textContent = 'Error: ' + err.message;
