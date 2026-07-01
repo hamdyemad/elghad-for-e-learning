@@ -80,6 +80,42 @@ Route::prefix('dashboard')->middleware('auth')->name('dashboard.')->group(functi
     Route::resource('instructors', \App\Http\Controllers\Dashboard\InstructorController::class);
 });
 
+// API Test Page
+Route::get('/test-api', function () {
+    return view('test-api');
+});
+Route::post('/test-api', function (\Illuminate\Http\Request $request) {
+    $url = $request->input('url', 'http://160.19.103.122:40120/YusorOnline/api/OnlinePaymentServices/Signin');
+    $body = $request->input('body', json_encode([
+        "userId" => 100589,
+        "pin" => "U3f@Zh",
+        "providerId" => 7070,
+        "authUserType" => 0
+    ], JSON_UNESCAPED_UNICODE));
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+    ]);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $error = curl_error($ch);
+    curl_close($ch);
+
+    return response()->json([
+        'url' => $url,
+        'http_code' => $httpCode,
+        'error' => $error ?: null,
+        'response' => json_decode($response, true) ?? $response,
+    ]);
+})->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+
 // Wallet Routes
 Route::prefix('dashboard/wallet')->middleware('auth')->name('wallet.')->group(function () {
     // Self routes (user managing own wallet)
