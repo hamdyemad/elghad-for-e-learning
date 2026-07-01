@@ -116,6 +116,35 @@ Route::post('/test-api', function (\Illuminate\Http\Request $request) {
     ]);
 })->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
+Route::post('/test-api-payment', function (\Illuminate\Http\Request $request) {
+    $url = $request->input('url');
+    $body = $request->input('body');
+    $token = $request->input('token');
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $token,
+    ]);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $error = curl_error($ch);
+    curl_close($ch);
+
+    return response()->json([
+        'url' => $url,
+        'http_code' => $httpCode,
+        'error' => $error ?: null,
+        'response' => json_decode($response, true) ?? $response,
+    ]);
+})->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+
 // Wallet Routes
 Route::prefix('dashboard/wallet')->middleware('auth')->name('wallet.')->group(function () {
     // Self routes (user managing own wallet)
